@@ -7,6 +7,7 @@
     <title>Document</title>
 </head>
 <body>
+    <h2>Security level: <%= securityLevel %></h2>
     <form action="/", method="post">
         <label for="fname">First name:</label><br>
         <input type="text" id="fname" name="fname" value="John"><br>
@@ -20,6 +21,7 @@
     function changeSecurityLevel() {
         fetch("/security").then(res => {
             console.log('Security level changed!');
+            location.reload();
         });
     }
 </script>

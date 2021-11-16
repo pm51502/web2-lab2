@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const cors = require('cors');
-const validator = require('validator');
+const sanitizeHtml = require('sanitize-html');
 
 const app = express();
 app.use(cors());
@@ -20,41 +20,29 @@ app.set("view engine", "ejs");
 
 var securityLevel = 0;
 
+app.get("/", (req, res) => {
+  res.render("pages/index", {
+    securityLevel: securityLevel
+  });
+});
+
 app.post("/", (req, res) => {
-  let firstName = req.body.fname;
-  let lastName = req.body.lname;
+  let firstName;
+  let lastName;
+  
+  if(securityLevel == 0) {
+    firstName = req.body.fname;
+    lastName = req.body.lname;
+  } else {
+    firstName = new String(sanitizeHtml(req.body.fname));
+    lastName = new String(sanitizeHtml(req.body.lname));
+  }
 
   res.render("pages/user", {
     securityLevel: securityLevel,
     firstName: firstName,
     lastName: lastName
   });
-  
-  // if(securityLevel == 0) {
-  //   firstName = req.body.fname;
-  //   lastName = req.body.lname;
-    
-  //   res.render("pages/user", {
-  //     securityLevel: securityLevel,
-  //     firstName: firstName,
-  //     lastName: lastName
-  //   });
-  // } else {
-  //   firstName = new String(validator.escape(req.body.fname));
-  //   lastName = new String(validator.escape(req.body.lname));
-
-  //   if (firstName.valueOf() != new String(req.body.fname).valueOf() 
-  //       || lastName.valueOf() != new String(req.body.lname).valueOf()){
-  //     firstName = "";
-  //     lastName = "";
-  //   }
-
-  //   res.render("pages/user", {
-  //     securityLevel: securityLevel,
-  //     firstName: firstName,
-  //     lastName: lastName
-  //   });
-  // }
 });
 
 app.get("/security", function(req, res) {
