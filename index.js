@@ -34,8 +34,8 @@ app.post("/", (req, res) => {
     firstName = req.body.fname;
     lastName = req.body.lname;
   } else {
-    firstName = new String(sanitizeHtml(req.body.fname));
-    lastName = new String(sanitizeHtml(req.body.lname));
+    firstName = sanitizeHtml(req.body.fname);
+    lastName = sanitizeHtml(req.body.lname);
   }
 
   res.render("pages/user", {
@@ -45,7 +45,7 @@ app.post("/", (req, res) => {
   });
 });
 
-app.get("/security", function(req, res) {
+app.get("/security", (req, res) => {
   securityLevel = securityLevel == 0 ? 1 : 0;
   res.end();
 });
