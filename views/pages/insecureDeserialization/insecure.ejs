@@ -5,23 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ropes DVWA</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
     <link rel="stylesheet" href="/css/site.css" />
   </head>
   <body>
     <ul>
       <div class="container">
-        <li><a class="active" href="/">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li><a href="/brokenauth">Broken Authentication</a></li>
         <li><a href="/xss">XSS</a></li>
-        <li><a href="/insecuredeserialization">Insecure Deserialization</a></li>
-
+        <li><a class="active" href="/insecuredeserialization">Insecure Deserialization</a></li>
+      
         <li class="sec-level"><a href="#" onclick="changeSecurityLevel()">Change security level</a></li>
         <li class="sec-level"><a href="#">Security level: <%= securityLevel %></a></li>
       </div>
     </ul>
     <div class="container">
-      <h1>Home</h1>
+        <h1>Insecure Deserialization</h1>
+        
+        <% for(let [key, value] of Object.entries(obj)) {%>
+            <h3><%= key %>: <%= value %></h3>
+        <% } %>
     </div>
   </body>
   <script src="/js/app.js"></script>
