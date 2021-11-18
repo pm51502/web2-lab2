@@ -15,24 +15,31 @@
     <ul>
       <div class="container">
         <li><a href="/">Home</a></li>
-        <li><a href="/brokenauth">Broken Authentication</a></li>
+        <li><a href="/login">Broken Authentication</a></li>
         <li><a class="active" href="/xss">XSS</a></li>
         <li><a href="/insecuredeserialization">Insecure Deserialization</a></li>
 
         <li class="sec-level"><a href="#" onclick="changeSecurityLevel()">Change security level</a></li>
         <li class="sec-level"><a href="#">Security level: <%= securityLevel %></a></li>
+
+        <% if(user.isAuthenticated) { %>
+          <li class="sec-level"><a href="#" onclick="logout()">Logout</a></li>
+        <% } %>
       </div>
     </ul>
     <div class="container">
         <h1>XSS</h1>
         <form action="/xss" method="post">
-          <label for="fname">First name:</label><br />
-          <input type="text" id="fname" name="fname" placeholder="Ropes" /><br />
+          <div class="form-group">
+            <label for="fname">First name:</label><br />
+            <input type="text" class="form-control" id="fname" name="fname" placeholder="Ropes" />
+          </div>
 
-          <label for="lname">Last name:</label><br />
-          <input type="text" id="lname" name="lname" placeholder="Rops" /><br /><br />
-
-          <input type="submit" value="Submit" />
+          <div class="form-group">
+            <label for="lname">Last name:</label><br />
+            <input type="text" class="form-control" id="lname" name="lname" placeholder="Rops" />
+          </div>
+          <input type="submit" class="btn btn-default" value="Submit" />
         </form>
     </div>
   </body>

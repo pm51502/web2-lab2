@@ -14,6 +14,10 @@ const { format } = require("path");
 dotenv.config();
 const port = process.env.PORT || 3000;
 
+const auth = require("./auth-middleware");
+auth.initCookieAuth(app);
+app.use(auth.getUserFromCookie);
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true}))
 
@@ -25,19 +29,87 @@ var securityLevel = 0;
 
 app.get("/", (req, res) => {
   res.render("pages/index", {
-    securityLevel: securityLevel
+    securityLevel: securityLevel,
+    user: req.user
   });
 });
 
-app.get("/brokenauth", (req, res) => {
-  res.render("pages/brokenAuth/brokenAuth", {
-    securityLevel: securityLevel
+
+app.get("/login", (req, res) => {
+  res.render("pages/brokenAuth/login", {
+    securityLevel: securityLevel,
+    user: req.user,
+    msg: ""
   });
 });
+
+app.post('/login',  function (req, res) {    
+  let username = req.body.username;
+  let password = req.body.password;
+
+  if(securityLevel == 0) {
+    msg = ""
+    if(username !== "admin") {
+      msg += "Incorrect username;";
+      if(username.length != 5) msg += "Incorrect username length;";
+    }
+    if(password !== "admin123") {
+      msg += "Incorrect password;";
+      if(password.length != "8") msg += "Incorrect password length;";
+    }
+    
+    if(username != "admin" || password != "admin123") {
+      res.render("pages/brokenAuth/login", {
+        securityLevel: securityLevel,
+        user: req.user,
+        msg: msg
+      });
+    } else {
+        auth.signInUser(res, username);
+        
+        res.render("pages/brokenAuth/private", {
+          securityLevel: securityLevel,
+          user: {
+            isAuthenticated : true,
+          },
+          msg: ""
+        });
+    }
+  } else {
+    let q1 = req.body.question1;
+    let q2 = req.body.question2;
+
+    if(username != "admin" || password != "B%MR9RWVRjJhKTw$bSgJvwzATH+fy_ygBqk4E-$GVwEHfcdEc5gvE33454gjNFeR"
+      || q1 != "fried nuts" || q2 != "os fkf") {
+      res.render("pages/brokenAuth/login", {
+        securityLevel: securityLevel,
+        user: req.user,
+        msg: "Incorrect credentials"
+      });
+    } else {
+        auth.signInUser(res, username);
+        
+        res.render("pages/brokenAuth/private", {
+          securityLevel: securityLevel,
+          user: {
+            isAuthenticated : true,
+          },
+          msg: ""
+        });
+    }
+  }
+});
+
+app.post("/logout",   function (req, res) {
+  auth.signOutUser(res);
+  res.end();
+});
+
 
 app.get("/xss", (req, res) => {
   res.render("pages/xss/xss", {
-    securityLevel: securityLevel
+    securityLevel: securityLevel,
+    user: req.user
   });
 });
 
@@ -56,14 +128,17 @@ app.post("/xss", (req, res) => {
   res.render("pages/xss/user", {
     securityLevel: securityLevel,
     firstName: firstName,
-    lastName: lastName
+    lastName: lastName,
+    user: req.user
   });
 });
 
 
 app.get("/insecuredeserialization", (req, res) => {
   res.render("pages/insecureDeserialization/insecureDeserialization", {
-    securityLevel: securityLevel
+    securityLevel: securityLevel,
+    error: false,
+    user: req.user
   });
 });
 
@@ -76,11 +151,16 @@ app.post("/insecuredeserialization", (req, res) => {
 
       res.render("pages/insecureDeserialization/insecure", {
         securityLevel: securityLevel,
-        obj: obj
+        obj: obj,
+        user: req.user
       });
 
     } catch(error) {
-      res.send("No serialized object")
+      res.render("pages/insecureDeserialization/insecureDeserialization", {
+        securityLevel: securityLevel,
+        error: true,
+        user: req.user
+      });
     }
   } else {
     var str = Buffer.from(req.body.serObj, 'base64').toString();
@@ -97,7 +177,8 @@ app.post("/insecuredeserialization", (req, res) => {
 
     res.render("pages/insecureDeserialization/secure", {
       securityLevel: securityLevel,
-      validationMap: validationMap
+      validationMap: validationMap,
+      user: req.user
     });
   }
 });

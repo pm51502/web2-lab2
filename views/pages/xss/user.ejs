@@ -13,12 +13,16 @@
         <ul>
             <div class="container">
               <li><a href="/">Home</a></li>
-              <li><a href="/brokenauth">Broken Authentication</a></li>
+              <li><a href="/login">Broken Authentication</a></li>
               <li><a class="active" href="/xss">XSS</a></li>
               <li><a href="/insecuredeserialization">Insecure Deserialization</a></li>
 
               <li class="sec-level"><a href="#" onclick="changeSecurityLevel()">Change security level</a></li>
               <li class="sec-level"><a href="#">Security level: <%= securityLevel %></a></li>
+
+              <% if(user.isAuthenticated) { %>
+                <li class="sec-level"><a href="#" onclick="logout()">Logout</a></li>
+              <% } %>
             </div>
         </ul>
     </nav>
